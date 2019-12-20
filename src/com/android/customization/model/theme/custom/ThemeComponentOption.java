@@ -23,6 +23,10 @@ import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY
 import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_ICON_SYSUI;
 import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_ICON_THEMEPICKER;
 import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_SHAPE;
+import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_UISTYLE_ANDROID;
+import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_UISTYLE_SETTINGS;
+import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_UISTYLE_SYSUI;
+import static com.android.customization.model.ResourceConstants.OVERLAY_CATEGORY_SHAPE;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -370,7 +374,7 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
             container.setContentDescription(
                     container.getContext().getString(R.string.color_preview_content_description));
 
-            bindPreviewHeader(container, R.string.preview_name_color, R.drawable.ic_colorize_24px);
+            bindPreviewHeader(container, R.string.preview_name_accent_color, R.drawable.ic_colorize_24px);
 
             TextView header = container.findViewById(R.id.theme_preview_card_header);
             header.setText(String.format("%s\n(%s)",
@@ -442,6 +446,147 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
         @Override
         public Builder buildStep(Builder builder) {
             builder.setColorAccentDark(mColorAccentDark).setColorAccentLight(mColorAccentLight);
+            return super.buildStep(builder);
+        }
+    }
+
+    public static class UiStyleOption extends ThemeComponentOption {
+
+        /**
+         * Ids of views used to represent control buttons in the color preview screen
+         */
+        private static int[] COLOR_BUTTON_IDS = {
+                R.id.preview_check_selected, R.id.preview_radio_selected,
+                R.id.preview_toggle_selected
+        };
+
+        @ColorInt private int mBackgroundColorLight;
+        @ColorInt private int mBackgroundColorDark;
+        @ColorInt private int mAccentColor;
+
+        private String mLabel;
+
+        @Override
+        public void bindThumbnailTile(View view) {
+            @ColorInt int color = resolveColor(view.getResources());
+            LayerDrawable selectedOption = (LayerDrawable) view.getResources().getDrawable(
+                    R.drawable.color_chip_hollow, view.getContext().getTheme());
+            Drawable unselectedOption = view.getResources().getDrawable(
+                    R.drawable.color_chip_filled, view.getContext().getTheme());
+
+            selectedOption.findDrawableByLayerId(R.id.center_fill).setTintList(
+                    ColorStateList.valueOf(color));
+            unselectedOption.setTintList(ColorStateList.valueOf(color));
+
+            StateListDrawable stateListDrawable = new StateListDrawable();
+            stateListDrawable.addState(new int[] {android.R.attr.state_activated}, selectedOption);
+            stateListDrawable.addState(
+                    new int[] {-android.R.attr.state_activated}, unselectedOption);
+
+            ((ImageView) view.findViewById(R.id.option_tile)).setImageDrawable(stateListDrawable);
+            view.setContentDescription(mLabel);
+        }
+
+        @ColorInt
+        private int resolveColor(Resources res) {
+            Configuration configuration = res.getConfiguration();
+            return (configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                    == Configuration.UI_MODE_NIGHT_YES ? mBackgroundColorDark : mBackgroundColorLight;
+        }
+
+        @Override
+        public boolean isActive(CustomizationManager<ThemeComponentOption> manager) {
+            CustomThemeManager customThemeManager = (CustomThemeManager) manager;
+            Map<String, String> themePackages = customThemeManager.getOverlayPackages();
+            if (getOverlayPackages().isEmpty()) {
+                return themePackages.get(OVERLAY_CATEGORY_UISTYLE_SETTINGS) == null &&
+                        themePackages.get(OVERLAY_CATEGORY_UISTYLE_SYSUI) == null &&
+                        themePackages.get(OVERLAY_CATEGORY_UISTYLE_ANDROID) == null;
+            }
+            for (Map.Entry<String, String> overlayEntry : getOverlayPackages().entrySet()) {
+                if(!Objects.equals(overlayEntry.getValue(),
+                        themePackages.get(overlayEntry.getKey()))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void addStyleInfo(String packageName, String label, @ColorInt int backgroundColorLight,@ColorInt int backgroundColorDark, @ColorInt int accentColor) {
+            mLabel = label;
+            mBackgroundColorLight = backgroundColorLight;
+            mBackgroundColorDark = backgroundColorDark;
+            mAccentColor = accentColor;
+        }
+
+        @Override
+        public int getLayoutResId() {
+            return R.layout.theme_style_option;
+        }
+
+        @Override
+        public void bindPreview(ViewGroup container) {
+            bindPreviewHeader(container, R.string.preview_name_ui_style, R.drawable.ic_colorize_24px);
+
+            TextView header = container.findViewById(R.id.theme_preview_card_header);
+            header.setText(container.getContext().getString(R.string.preview_name_ui_style) + "\n\u0028" + mLabel + "\u0029");
+            ViewGroup cardBody = container.findViewById(R.id.theme_preview_card_body_container);
+            if (cardBody.getChildCount() == 0) {
+                LayoutInflater.from(container.getContext()).inflate(
+                        R.layout.preview_card_style_content, cardBody, true);
+            }
+            Resources res = container.getResources();
+            View v = container.findViewById(R.id.preview_styles);
+            @ColorInt int backgroundColor = resolveColor(res);
+            v.setBackgroundColor(backgroundColor);
+
+            @ColorInt int controlGreyColor = res.getColor(R.color.control_grey);
+            ColorStateList tintList = new ColorStateList(
+                    new int[][]{
+                            new int[]{android.R.attr.state_selected},
+                            new int[]{android.R.attr.state_checked},
+                            new int[]{-android.R.attr.state_enabled}
+                    },
+                    new int[] {
+                            mAccentColor,
+                            mAccentColor,
+                            controlGreyColor
+                    }
+            );
+
+            for (int i = 0; i < COLOR_BUTTON_IDS.length; i++) {
+                CompoundButton button = container.findViewById(COLOR_BUTTON_IDS[i]);
+                button.setButtonTintList(tintList);
+            }
+
+            Switch enabledSwitch = container.findViewById(R.id.preview_toggle_selected);
+            enabledSwitch.setThumbTintList(tintList);
+            enabledSwitch.setTrackTintList(tintList);
+
+            ColorStateList seekbarTintList = ColorStateList.valueOf(mAccentColor);
+            SeekBar seekbar = container.findViewById(R.id.preview_seekbar);
+            seekbar.setThumbTintList(seekbarTintList);
+            seekbar.setProgressTintList(seekbarTintList);
+            seekbar.setProgressBackgroundTintList(seekbarTintList);
+            // Disable seekbar
+            seekbar.setOnTouchListener((view, motionEvent) -> true);
+        }
+
+        /**
+         * @return whether this icon option has overlays and previews for all the required packages
+         */
+        public boolean isValid(Context context) {
+            return getOverlayPackages().keySet().size() ==
+                    ResourceConstants.getPackagesToOverlay(context).length;
+        }
+
+        public void setLabel(String label) {
+            mLabel = label;
+        }
+
+        @Override
+        public Builder buildStep(Builder builder) {
+	          builder.setBackgroundColorLight(mBackgroundColorLight).setBackgroundColorDark(mBackgroundColorDark);
             return super.buildStep(builder);
         }
     }

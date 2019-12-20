@@ -27,8 +27,7 @@
         android:paddingHorizontal="@dimen/preview_theme_color_icons_padding_horizontal"
         android:paddingTop="@dimen/preview_theme_color_icons_padding_top"
         android:paddingBottom="@dimen/preview_theme_color_icons_padding_bottom"
-        android:orientation="vertical"
-        android:background="@color/theme_preview_color_icons_background">
+        android:orientation="vertical">
 
         <!-- Title -->
         <TextView

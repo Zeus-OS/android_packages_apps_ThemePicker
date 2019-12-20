@@ -10,6 +10,7 @@ import android.content.om.OverlayInfo;
 import android.content.om.OverlayManager;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Typeface;
@@ -18,6 +19,7 @@ import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
 
@@ -75,6 +77,27 @@ class OverlayThemeExtractor {
                             colorOverlayPackage));
         } else {
             addSystemDefaultColor(builder);
+        }
+    }
+
+    void addUiStyleOverlay(Builder builder, String uiStyleOverlayPackage)
+            throws NameNotFoundException {
+        if (!TextUtils.isEmpty(uiStyleOverlayPackage)) {
+            builder.addOverlayPackage(getOverlayCategory(uiStyleOverlayPackage),
+                    uiStyleOverlayPackage)
+                    .setBackgroundColorLight(loadColor(ResourceConstants.STYLE_BACKGROUND_COLOR_LIGHT_NAME,
+                            uiStyleOverlayPackage))
+                    .setBackgroundColorDark(loadColor(ResourceConstants.STYLE_BACKGROUND_COLOR_DARK_NAME,
+                            uiStyleOverlayPackage));
+        } else {
+            addSystemDefaultStyle(builder);
+        }
+    }
+
+    void addNoPreviewUiStyleOverlay(Builder builder, String overlayPackage) {
+        if (!TextUtils.isEmpty(overlayPackage)) {
+            builder.addOverlayPackage(getOverlayCategory(overlayPackage),
+                    overlayPackage);
         }
     }
 
@@ -208,6 +231,19 @@ class OverlayThemeExtractor {
                 system.getIdentifier(ResourceConstants.ACCENT_COLOR_DARK_NAME, "color",
                         ResourceConstants.ANDROID_PACKAGE), null);
         builder.setColorAccentDark(colorAccentDark);
+    }
+
+    void addSystemDefaultStyle(Builder builder) {
+        Resources system = Resources.getSystem();
+        int colorBackgroundLight = system.getColor(
+                system.getIdentifier(ResourceConstants.STYLE_BACKGROUND_COLOR_LIGHT_NAME, "color",
+                        ResourceConstants.ANDROID_PACKAGE), null);
+        builder.setBackgroundColorLight(colorBackgroundLight);
+
+        int colorBackgroundDark = system.getColor(
+                system.getIdentifier(ResourceConstants.STYLE_BACKGROUND_COLOR_DARK_NAME, "color",
+                        ResourceConstants.ANDROID_PACKAGE), null);
+        builder.setBackgroundColorDark(colorBackgroundDark);
     }
 
     void addSystemDefaultFont(Builder builder) {
