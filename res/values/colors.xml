@@ -22,7 +22,7 @@
     <color name="google_grey700">#5f6368</color>
     <color name="google_grey900">#202124</color>
     <color name="material_grey_100">#fff5f5f5</color>
-    <color name="material_grey_200">#ffeeeeee</color>
+    <color name="material_grey_200">#fff8f9fa</color>
     <color name="status_bar_color">#ffffffff</color>
 
     <color name="system_navigation_bar_background">@android:color/white</color>
