@@ -20,4 +20,7 @@
     <string name="preview_name_color_new">Accent color</string>
     <string name="color_component_title_new">Choose accent color</string>
     <string name="no_options_message">No valid primary colors available</string>
+    <string name="use_accent_color_hour">Hour Accent color</string>
+    <string name="use_accent_color_minute">Minute Accent color</string>
+    <string name="use_accent_color_custom">Accent color (custom clock)</string>
 </resources>
