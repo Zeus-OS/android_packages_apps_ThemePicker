@@ -156,7 +156,7 @@
     <string name="icon_component_title">Choose icons</string>
 
     <!-- Title of a page allowing the user to choose a color for a custom theme [CHAR LIMIT=40]-->
-    <string name="color_component_title">Choose color</string>
+    <string name="color_component_title">Tap on color below and you will be taken to ZenX-Theme</string>
 
     <!-- Title of a page allowing the user to choose an icon shape for a custom theme [CHAR LIMIT=40]-->
     <string name="shape_component_title">Choose shape</string>
