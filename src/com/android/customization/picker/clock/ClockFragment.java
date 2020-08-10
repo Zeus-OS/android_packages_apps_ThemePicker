@@ -140,20 +140,21 @@ public class ClockFragment extends ToolbarFragment {
         mUseAccentHourColorButton = view.findViewById(R.id.use_accent_color_hour);
         if(mUseAccentHourColorButton != null) {
             mUseAccentHourColorButton.setOnCheckedChangeListener(this::onUseAccentColorHourCheckChanged);
+            mUseAccentHourColorButton.setChecked(getIsHourColorAccentEnabled());
         }
-        mUseAccentHourColorButton.setChecked(getIsHourColorAccentEnabled());
 
         mUseAccentMinuteColorButton = view.findViewById(R.id.use_accent_color_minute);
         if(mUseAccentMinuteColorButton != null) {
             mUseAccentMinuteColorButton.setOnCheckedChangeListener(this::onUseAccentColorMinuteCheckChanged);
+            mUseAccentMinuteColorButton.setChecked(getIsMinuteColorAccentEnabled());
+
         }
-        mUseAccentMinuteColorButton.setChecked(getIsMinuteColorAccentEnabled());
 
         mUseAccentCustomColorButton = view.findViewById(R.id.use_accent_color_custom);
         if(mUseAccentCustomColorButton != null) {
             mUseAccentCustomColorButton.setOnCheckedChangeListener(this::onUseAccentColorCustomCheckChanged);
+            mUseAccentCustomColorButton.setChecked(getIsCustomColorAccentEnabled());
         }
-        mUseAccentCustomColorButton.setChecked(getIsCustomColorAccentEnabled());
 
         return view;
     }
