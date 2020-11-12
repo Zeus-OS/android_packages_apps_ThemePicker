@@ -71,6 +71,58 @@
                 app:layout_constraintTop_toBottomOf="@id/options_container"
                 app:layout_constraintVertical_bias="1.0"/>
 
+            <CheckBox
+                android:id="@+id/use_accent_color_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/min_taptarget_height"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:paddingLeft="4dp"
+                android:text="@string/use_accent_color_hour"
+                app:layout_constraintBottom_toTopOf="@id/apply_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="@dimen/min_taptarget_height"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/options_container"
+                app:layout_constraintVertical_bias="1.0"/>
+
+            <CheckBox
+                android:id="@+id/use_accent_color_minute"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/min_taptarget_height"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:paddingLeft="4dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/use_accent_color_minute"
+                app:layout_constraintBottom_toTopOf="@id/use_accent_color_hour"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="@dimen/min_taptarget_height"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/options_container"
+                app:layout_constraintVertical_bias="1.0"/>
+
+            <CheckBox
+                android:id="@+id/use_accent_color_custom"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/min_taptarget_height"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:gravity="end|center_vertical"
+                android:paddingLeft="4dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/use_accent_color_custom"
+                app:layout_constraintBottom_toTopOf="@id/use_accent_color_hour"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="@dimen/min_taptarget_height"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintTop_toBottomOf="@id/options_container"
+                app:layout_constraintVertical_bias="1.0"/>
+
             <Button
                 android:id="@+id/apply_button"
                 style="@style/ActionPrimaryButton"

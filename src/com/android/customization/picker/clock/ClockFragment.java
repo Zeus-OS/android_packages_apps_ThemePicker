@@ -26,6 +26,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.os.UserHandle;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,6 +81,9 @@ public class ClockFragment extends ToolbarFragment {
     private View mContent;
     private View mError;
     private ThemesUserEventLogger mEventLogger;
+    private CheckBox mUseAccentHourColorButton;
+    private CheckBox mUseAccentMinuteColorButton;
+    private CheckBox mUseAccentCustomColorButton;
 
     @Override
     public void onAttach(Context context) {
@@ -130,11 +137,59 @@ public class ClockFragment extends ToolbarFragment {
             });
 
         });
+        mUseAccentHourColorButton = view.findViewById(R.id.use_accent_color_hour);
+        if(mUseAccentHourColorButton != null) {
+            mUseAccentHourColorButton.setOnCheckedChangeListener(this::onUseAccentColorHourCheckChanged);
+        }
+        mUseAccentHourColorButton.setChecked(getIsHourColorAccentEnabled());
+
+        mUseAccentMinuteColorButton = view.findViewById(R.id.use_accent_color_minute);
+        if(mUseAccentMinuteColorButton != null) {
+            mUseAccentMinuteColorButton.setOnCheckedChangeListener(this::onUseAccentColorMinuteCheckChanged);
+        }
+        mUseAccentMinuteColorButton.setChecked(getIsMinuteColorAccentEnabled());
+
+        mUseAccentCustomColorButton = view.findViewById(R.id.use_accent_color_custom);
+        if(mUseAccentCustomColorButton != null) {
+            mUseAccentCustomColorButton.setOnCheckedChangeListener(this::onUseAccentColorCustomCheckChanged);
+        }
+        mUseAccentCustomColorButton.setChecked(getIsCustomColorAccentEnabled());
+
         return view;
+    }
+
+    public boolean getIsHourColorAccentEnabled() {
+        return Settings.System.getInt(getContext().getContentResolver(),
+            Settings.System.LOCKSCREEN_ACCENT_COLOR_HOUR, 0) == 1;
+    }
+
+    public boolean getIsMinuteColorAccentEnabled() {
+        return Settings.System.getInt(getContext().getContentResolver(),
+            Settings.System.LOCKSCREEN_ACCENT_COLOR_MINUTE, 0) == 1;
+    }
+
+    public boolean getIsCustomColorAccentEnabled() {
+        return Settings.System.getInt(getContext().getContentResolver(),
+            Settings.System.LOCKSCREEN_ACCENT_COLOR_CUSTOM, 0) == 1;
     }
 
     private void createAdapter() {
         mPreviewPager.setAdapter(new ClockPreviewAdapter(getContext(), mSelectedOption));
+    }
+
+    private void onUseAccentColorHourCheckChanged(CompoundButton checkbox, boolean checked) {
+        Settings.System.putInt(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_ACCENT_COLOR_HOUR, checked ? 1 : 0);
+    }
+
+    private void onUseAccentColorMinuteCheckChanged(CompoundButton checkbox, boolean checked) {
+        Settings.System.putInt(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_ACCENT_COLOR_MINUTE, checked ? 1 : 0);
+    }
+
+    private void onUseAccentColorCustomCheckChanged(CompoundButton checkbox, boolean checked) {
+        Settings.System.putInt(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_ACCENT_COLOR_CUSTOM, checked ? 1 : 0);
     }
 
     private void setUpOptions() {
