@@ -20,4 +20,7 @@
     <string name="preview_name_ui_style">UI Style</string>
     <string name="preview_name_accent_color">Accent color</string>
     <string name="no_options_message">No valid UI Styles available</string>
+    <!-- Themes suffix after reading if they're dark or light only friendly -->
+    <string name="ui_styles_suffix_light_only">Light only</string>
+    <string name="ui_styles_suffix_dark_only">Dark only</string>
 </resources>

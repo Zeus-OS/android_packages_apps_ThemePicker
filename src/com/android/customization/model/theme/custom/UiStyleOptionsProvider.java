@@ -56,6 +56,11 @@ public class UiStyleOptionsProvider extends ThemeComponentOptionProvider<UiStyle
     private final CustomThemeManager mCustomThemeManager;
     private final String mDefaultThemePackage;
 
+    private int UI_STYLE_UNSUPPORTED = -1;
+    private int UI_STYLE_SUPPORT_BOTH = 0;
+    private int UI_STYLE_LIGHT_ONLY = 1;
+    private int UI_STYLE_DARK_ONLY = 2;
+
     private final List<String> mSysUiStylesOverlayPackages = new ArrayList<>();
     private final List<String> mSettingsStylesOverlayPackages = new ArrayList<>();
 
@@ -87,17 +92,29 @@ public class UiStyleOptionsProvider extends ThemeComponentOptionProvider<UiStyle
                     OVERLAY_CATEGORY_UISTYLE_ANDROID);
             try {
                 Resources overlayRes = getOverlayResources(overlayPackage);
-                int lightColor = overlayRes.getColor(
-                        overlayRes.getIdentifier(STYLE_BACKGROUND_COLOR_LIGHT_NAME, "color", overlayPackage),
-                        null);
-                int darkColor = overlayRes.getColor(
-                        overlayRes.getIdentifier(STYLE_BACKGROUND_COLOR_DARK_NAME, "color", overlayPackage),
-                        null);
-                int cornerRadius = loadCornerRadius(overlayPackage);
-                PackageManager pm = mContext.getPackageManager();
-                String label = pm.getApplicationInfo(overlayPackage, 0).loadLabel(pm).toString();
-                option.addStyleInfo(overlayPackage, label, lightColor, darkColor, accentColor, cornerRadius);
-                mOptions.add(option);
+                if (getStyleLevel(overlayRes, overlayPackage) > UI_STYLE_UNSUPPORTED) {
+                    int lightColor = getSafeLightColor(overlayRes, overlayPackage);
+                    int darkColor = getSafeDarkColor(overlayRes, overlayPackage);
+                    int cornerRadius = loadCornerRadius(overlayPackage);
+                    PackageManager pm = mContext.getPackageManager();
+                    
+                    StringBuilder uiLabel = new StringBuilder(
+                          pm.getApplicationInfo(overlayPackage, 0).loadLabel(pm).toString());
+                    if (getStyleLevel(overlayRes, overlayPackage) == UI_STYLE_LIGHT_ONLY) {
+                        uiLabel.append(" \u00b7 " +
+                            mContext.getResources().getString(R.string.ui_styles_suffix_light_only));
+                    } else if (getStyleLevel(overlayRes, overlayPackage) == UI_STYLE_DARK_ONLY) {
+                        uiLabel.append(" \u00b7 " +
+                            mContext.getResources().getString(R.string.ui_styles_suffix_dark_only));
+                    }
+                    String label = uiLabel.toString();
+
+                    option.addStyleInfo(overlayPackage, label, lightColor, darkColor, accentColor, cornerRadius);
+                    mOptions.add(option);
+                } else {
+                    Log.w(TAG, String.format("The UI style overlay %s is not supported, will skip it",
+                        overlayPackage));
+                }
             } catch (NameNotFoundException | NotFoundException e) {
                 Log.w(TAG, String.format("Couldn't load UI style overlay %s, will skip it",
                         overlayPackage), e);
@@ -163,6 +180,66 @@ public class UiStyleOptionsProvider extends ThemeComponentOptionProvider<UiStyle
         option.addOverlayPackage(OVERLAY_CATEGORY_UISTYLE_SYSUI, null);
         option.addOverlayPackage(OVERLAY_CATEGORY_UISTYLE_SETTINGS, null);
         mOptions.add(option);
+    }
+
+    private int getSafeLightColor(Resources overlayRes, String overlayPackage) {
+        int lightColor;
+        Resources system = Resources.getSystem();
+        try {
+            lightColor = overlayRes.getColor(
+                overlayRes.getIdentifier(STYLE_BACKGROUND_COLOR_LIGHT_NAME, "color", overlayPackage),
+                null);
+        } catch (NotFoundException e) {
+            Log.w(TAG,"Couldn't find light color for this theme, using system default", e);
+            lightColor = system.getColor(
+                system.getIdentifier(STYLE_BACKGROUND_COLOR_LIGHT_NAME, "color", ANDROID_PACKAGE), null);
+        }
+        return lightColor;
+    }
+
+    private int getSafeDarkColor(Resources overlayRes, String overlayPackage) {
+        int darkColor;
+        Resources system = Resources.getSystem();
+        try {
+            darkColor = overlayRes.getColor(
+                overlayRes.getIdentifier(STYLE_BACKGROUND_COLOR_DARK_NAME, "color", overlayPackage),
+                null);
+        } catch (NotFoundException e) {
+            Log.w(TAG,"Couldn't find dark color for this theme, using system default", e);
+            darkColor = system.getColor(
+                system.getIdentifier(STYLE_BACKGROUND_COLOR_DARK_NAME, "color", ANDROID_PACKAGE), null);
+        }
+        return darkColor;
+    }
+
+    private int getStyleLevel(Resources overlayRes, String overlayPackage) {
+        boolean gotLightMode, gotDarkMode;
+        int result = UI_STYLE_UNSUPPORTED;
+        try {
+            int lightColor = overlayRes.getColor(
+                overlayRes.getIdentifier(STYLE_BACKGROUND_COLOR_LIGHT_NAME, "color", overlayPackage),
+                null);
+            gotLightMode = true;
+        } catch (NotFoundException e) {
+            gotLightMode = false;
+        }
+        try {
+            int darkColor = overlayRes.getColor(
+                overlayRes.getIdentifier(STYLE_BACKGROUND_COLOR_DARK_NAME, "color", overlayPackage),
+                null);
+            gotDarkMode = true;
+        } catch (NotFoundException e) {
+            gotDarkMode = false;
+        }
+        
+        if (gotLightMode && gotDarkMode) {
+            result = UI_STYLE_SUPPORT_BOTH;
+        } else if (gotLightMode && !gotDarkMode) {
+            result = UI_STYLE_LIGHT_ONLY;
+        } else if (!gotLightMode && gotDarkMode) {
+            result = UI_STYLE_DARK_ONLY;
+        }
+        return result;
     }
 
     @Dimension
