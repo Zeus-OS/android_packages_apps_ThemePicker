@@ -1,6 +1,7 @@
 package com.android.customization.model.theme;
 
 import static com.android.customization.model.ResourceConstants.ANDROID_PACKAGE;
+import static com.android.customization.model.ResourceConstants.CONFIG_CORNERRADIUS;
 import static com.android.customization.model.ResourceConstants.ICONS_FOR_PREVIEW;
 import static com.android.customization.model.ResourceConstants.SETTINGS_PACKAGE;
 import static com.android.customization.model.ResourceConstants.SYSUI_PACKAGE;
@@ -88,7 +89,9 @@ class OverlayThemeExtractor {
                     .setBackgroundColorLight(loadColor(ResourceConstants.STYLE_BACKGROUND_COLOR_LIGHT_NAME,
                             uiStyleOverlayPackage))
                     .setBackgroundColorDark(loadColor(ResourceConstants.STYLE_BACKGROUND_COLOR_DARK_NAME,
-                            uiStyleOverlayPackage));
+                            uiStyleOverlayPackage))
+                    .setBottomSheetCornerRadius(
+                            loadCorners(ResourceConstants.CONFIG_CORNERRADIUS, uiStyleOverlayPackage));
         } else {
             addSystemDefaultStyle(builder);
         }
@@ -112,9 +115,7 @@ class OverlayThemeExtractor {
             builder.addOverlayPackage(getOverlayCategory(shapeOverlayPackage),
                     shapeOverlayPackage)
                     .setShapePath(
-                            loadString(ResourceConstants.CONFIG_ICON_MASK, shapeOverlayPackage))
-                    .setBottomSheetCornerRadius(
-                            loadDimen(ResourceConstants.CONFIG_CORNERRADIUS, shapeOverlayPackage));
+                            loadString(ResourceConstants.CONFIG_ICON_MASK, shapeOverlayPackage));
         } else {
             addSystemDefaultShape(builder);
         }
@@ -213,11 +214,7 @@ class OverlayThemeExtractor {
         String iconMaskPath = system.getString(
                 system.getIdentifier(ResourceConstants.CONFIG_ICON_MASK,
                         "string", ResourceConstants.ANDROID_PACKAGE));
-        builder.setShapePath(iconMaskPath)
-                .setBottomSheetCornerRadius(
-                        system.getDimensionPixelOffset(
-                                system.getIdentifier(ResourceConstants.CONFIG_CORNERRADIUS,
-                                        "dimen", ResourceConstants.ANDROID_PACKAGE)));
+        builder.setShapePath(iconMaskPath);
     }
 
     void addSystemDefaultColor(Builder builder) {
@@ -244,6 +241,11 @@ class OverlayThemeExtractor {
                 system.getIdentifier(ResourceConstants.STYLE_BACKGROUND_COLOR_DARK_NAME, "color",
                         ResourceConstants.ANDROID_PACKAGE), null);
         builder.setBackgroundColorDark(colorBackgroundDark);
+
+        builder.setBottomSheetCornerRadius(
+                        system.getDimensionPixelOffset(
+                                system.getIdentifier(ResourceConstants.CONFIG_CORNERRADIUS,
+                                        "dimen", ResourceConstants.ANDROID_PACKAGE)));
     }
 
     void addSystemDefaultFont(Builder builder) {
@@ -287,6 +289,24 @@ class OverlayThemeExtractor {
                 mContext.getPackageManager().getResourcesForApplication(
                         packageName);
         return overlayRes.getString(overlayRes.getIdentifier(stringName, "string", packageName));
+    }
+
+    @Dimension
+    int loadCorners(String dimenName, String packageName) {
+        Resources system = Resources.getSystem();
+        try {
+            Resources overlayRes =
+                    mContext.getPackageManager().getResourcesForApplication(
+                            packageName);
+            return overlayRes.getDimensionPixelOffset(overlayRes.getIdentifier(
+                    dimenName, "dimen", packageName));
+        } catch (NameNotFoundException | NotFoundException e) {
+            Log.w(TAG, "Corners not set, using system default");
+            return system.getDimensionPixelOffset(
+                       system.getIdentifier(ResourceConstants.CONFIG_CORNERRADIUS,
+                           "dimen", ResourceConstants.ANDROID_PACKAGE));
+        
+        }
     }
 
     @Dimension
