@@ -34,6 +34,8 @@
         [CHAR LIMIT=20] -->
     <string name="apply_theme_btn">Apply</string>
 
+    <string name="options_btn">Options</string>
+
     <!-- Label telling the user they can tap the card to edit the currently selected custom Theme.
         [CHAR LIMIT=50] -->
     <string name="edit_custom_theme_lbl">Tap to edit</string>

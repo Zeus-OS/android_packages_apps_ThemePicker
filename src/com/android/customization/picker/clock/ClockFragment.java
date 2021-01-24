@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +54,9 @@ import java.util.List;
 public class ClockFragment extends AppbarFragment {
 
     private static final String TAG = "ClockFragment";
+
+    private static final String SETTINGS_FRAG = "com.android.settings";
+    private static final String SETTINGS_ACTION = "com.android.settings.Settings$ZenxLsClockPluginActivity";
 
     /**
      * Interface to be implemented by an Activity hosting a {@link ClockFragment}
@@ -116,6 +120,11 @@ public class ClockFragment extends AppbarFragment {
                 }
             });
 
+        });
+        view.findViewById(R.id.options_button).setOnClickListener(v -> {
+            Intent settings = new Intent(Intent.ACTION_MAIN);
+                    settings.setClassName(SETTINGS_FRAG, SETTINGS_ACTION);
+                    view.getContext().startActivity(settings);
         });
         return view;
     }
