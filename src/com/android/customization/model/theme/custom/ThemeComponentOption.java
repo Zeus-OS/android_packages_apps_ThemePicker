@@ -325,7 +325,7 @@ public abstract class ThemeComponentOption implements CustomizationOption<ThemeC
 
 
         private static final String SETTINGS_FRAG = "com.android.settings";
-        private static final String SETTINGS_ACTION = "com.android.settings.Settings$ZenxThemeActivity";
+        private static final String SETTINGS_ACTION = "com.android.settings.Settings$ZeusThemeActivity";
         ColorOption(String packageName, String label, @ColorInt int lightColor,
                 @ColorInt int darkColor) {
             addOverlayPackage(OVERLAY_CATEGORY_COLOR, packageName);

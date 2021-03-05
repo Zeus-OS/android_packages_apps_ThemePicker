@@ -56,7 +56,7 @@ public class ClockFragment extends AppbarFragment {
     private static final String TAG = "ClockFragment";
 
     private static final String SETTINGS_FRAG = "com.android.settings";
-    private static final String SETTINGS_ACTION = "com.android.settings.Settings$ZenxLsClockPluginActivity";
+    private static final String SETTINGS_ACTION = "com.android.settings.Settings$ZeusLsClockPluginActivity";
 
     /**
      * Interface to be implemented by an Activity hosting a {@link ClockFragment}
