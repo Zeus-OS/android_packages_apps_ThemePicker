@@ -47,13 +47,23 @@
             <include layout="@layout/theme_preview_card"/>
         </FrameLayout>
 
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/component_preview_container"
+            app:layout_constraintBottom_toTopOf="@+id/component_scroll_view"/>
+
         <ScrollView
                 android:id="@+id/component_scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/component_preview_container"
+                app:layout_constraintTop_toBottomOf="@+id/divider"
                 app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
