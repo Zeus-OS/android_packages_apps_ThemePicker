@@ -121,11 +121,13 @@ public class ClockFragment extends AppbarFragment {
             });
 
         });
-        view.findViewById(R.id.options_button).setOnClickListener(v -> {
-            Intent settings = new Intent(Intent.ACTION_MAIN);
-                    settings.setClassName(SETTINGS_FRAG, SETTINGS_ACTION);
-                    view.getContext().startActivity(settings);
-        });
+        if(view.findViewById(R.id.options_button) != null) {
+            view.findViewById(R.id.options_button).setOnClickListener(v -> {
+                Intent settings = new Intent(Intent.ACTION_MAIN);
+                        settings.setClassName(SETTINGS_FRAG, SETTINGS_ACTION);
+                        view.getContext().startActivity(settings);
+            });
+        }
         return view;
     }
 
